@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SamplingThread_t {
-    QByteArrayData data[4];
-    char stringdata0[42];
+    QByteArrayData data[8];
+    char stringdata0[70];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,10 +34,15 @@ static const qt_meta_stringdata_SamplingThread_t qt_meta_stringdata_SamplingThre
 QT_MOC_LITERAL(0, 0, 14), // "SamplingThread"
 QT_MOC_LITERAL(1, 15, 12), // "setAmplitude"
 QT_MOC_LITERAL(2, 28, 0), // ""
-QT_MOC_LITERAL(3, 29, 12) // "setFrequency"
+QT_MOC_LITERAL(3, 29, 12), // "setFrequency"
+QT_MOC_LITERAL(4, 42, 5), // "start"
+QT_MOC_LITERAL(5, 48, 4), // "stop"
+QT_MOC_LITERAL(6, 53, 9), // "setOffset"
+QT_MOC_LITERAL(7, 63, 6) // "offset"
 
     },
-    "SamplingThread\0setAmplitude\0\0setFrequency"
+    "SamplingThread\0setAmplitude\0\0setFrequency\0"
+    "start\0stop\0setOffset\0offset"
 };
 #undef QT_MOC_LITERAL
 
@@ -47,7 +52,7 @@ static const uint qt_meta_data_SamplingThread[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -55,12 +60,18 @@ static const uint qt_meta_data_SamplingThread[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   24,    2, 0x0a /* Public */,
-       3,    1,   27,    2, 0x0a /* Public */,
+       1,    1,   39,    2, 0x0a /* Public */,
+       3,    1,   42,    2, 0x0a /* Public */,
+       4,    0,   45,    2, 0x0a /* Public */,
+       5,    0,   46,    2, 0x0a /* Public */,
+       6,    1,   47,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Double,    2,
     QMetaType::Void, QMetaType::Double,    2,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Double,    7,
 
        0        // eod
 };
@@ -73,6 +84,9 @@ void SamplingThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         switch (_id) {
         case 0: _t->setAmplitude((*reinterpret_cast< double(*)>(_a[1]))); break;
         case 1: _t->setFrequency((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 2: _t->start(); break;
+        case 3: _t->stop(); break;
+        case 4: _t->setOffset((*reinterpret_cast< double(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -103,13 +117,13 @@ int SamplingThread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 2;
+        _id -= 5;
     }
     return _id;
 }

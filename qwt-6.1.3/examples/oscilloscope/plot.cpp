@@ -10,6 +10,7 @@
 #include <qwt_curve_fitter.h>
 #include <qwt_painter.h>
 #include <qevent.h>
+#include <qwt_plot_legenditem.h>
 
 class Canvas: public QwtPlotCanvas
 {
@@ -113,17 +114,47 @@ Plot::Plot( QWidget *parent ):
     d_curve->setPaintAttribute( QwtPlotCurve::ClipPolygons, false );
     d_curve->setData( new CurveData() );
     d_curve->attach( this );
+
+    // al final del constructor de Plot, después de crear d_curve y attach()
+    d_legendItem = new QwtPlotLegendItem();
+    d_legendItem->setMaxColumns(1);
+    d_legendItem->setAlignment(Qt::AlignTop | Qt::AlignRight); // esquina superior derecha
+    d_legendItem->setBorderRadius(6);
+    d_legendItem->setMargin(6);
+    d_legendItem->setSpacing(4);
+    d_legendItem->setBackgroundMode(QwtPlotLegendItem::ItemBackground);
+    d_legendItem->setBackgroundBrush(QBrush(QColor(255, 255, 255, 180))); // blanco translúcido
+    d_legendItem->setTextPen(QPen(Qt::black));
+    d_legendItem->attach(this);
+    d_legendItem->setVisible(false); // arranca oculto
 }
 
 Plot::~Plot()
 {
+    if (d_timerId >= 0)
+        killTimer(d_timerId);
     delete d_directPainter;
 }
 
 void Plot::start()
 {
     d_clock.start();
-    d_timerId = startTimer( 10 );
+    d_lastNowSec = 0.0;
+    if (d_timerId < 0)
+        d_timerId = startTimer(10);
+}
+
+void Plot::stop()
+{
+    const double nowSec = d_clock.elapsed() / 1000.0;
+    d_elapsedOffsetSec += nowSec;
+    d_lastNowSec = nowSec;
+
+    if (d_timerId >= 0)
+    {
+        killTimer(d_timerId);
+        d_timerId = -1;
+    }
 }
 
 void Plot::replot()
@@ -220,8 +251,9 @@ void Plot::timerEvent( QTimerEvent *event )
     if ( event->timerId() == d_timerId )
     {
         updateCurve();
-
-        const double elapsed = d_clock.elapsed() / 1000.0;
+        const double nowSec = d_clock.elapsed() / 1000.0;
+        const double elapsed = d_elapsedOffsetSec + nowSec;
+        d_lastNowSec = nowSec;
         if ( elapsed > d_interval.maxValue() )
             incrementInterval();
 
@@ -251,4 +283,37 @@ bool Plot::eventFilter( QObject *object, QEvent *event )
     }
 
     return QwtPlot::eventFilter( object, event );
+}
+
+void Plot::setCurveColor(const QColor& c)
+{
+    d_curve->setPen(c);
+    QPalette pal = canvas()->palette();
+    pal.setColor(QPalette::WindowText, c);
+    canvas()->setPalette(pal);
+
+    replot();
+}
+
+QColor Plot::curveColor() const
+{
+    return d_curve->pen().color();
+}
+
+void Plot::toggleLegend(bool on)
+{
+    if (d_legendItem) {
+        d_legendItem->setVisible(on);
+        replot();
+    }
+}
+
+void Plot::setLegendText(const QString& text)
+{
+    if (d_curve) {
+        d_curve->setTitle(QwtText(text));
+        // QwtPlotLegendItem toma el título del item
+        if (d_legendItem && d_legendItem->isVisible())
+            replot();
+    }
 }

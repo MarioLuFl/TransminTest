@@ -1,6 +1,13 @@
 
-#include <QtWidgets/QApplication>
+/*
+  Soy Mario Lupaca y estoy interesado en la postulación. Este ejemplo fue implementado a partir de la
+  plantilla brindada en GitHub (QWT/oscilloscope). Lo resolví utilizando las
+  herramientas indicadas y siguiendo las instrucciones publicadas en su sitio web.
+  El objetivo fue demostrar integración de QWT con Qt (UI, threading, captura de
+  imágenes, exportación y leyendas embebidas) y la adaptación solicitada.
+*/
 
+#include <QtWidgets/QApplication>
 #include "../../qwt-6.1.3/examples/oscilloscope/mainwindow.h"
 #include "../../qwt-6.1.3/examples/oscilloscope/samplingThread.h"
 
@@ -23,6 +30,12 @@ int main(int argc, char *argv[])
         &samplingThread, SLOT( setAmplitude( double ) ) );
     window.connect( &window, SIGNAL( signalIntervalChanged( double ) ),
         &samplingThread, SLOT( setInterval( double ) ) );
+    window.connect(&window, SIGNAL(dcOffsetChanged(double)),
+        &samplingThread, SLOT(setOffset(double)));
+
+    // Stop
+    QObject::connect(&window, &MainWindow::stopRequested, &samplingThread, &SamplingThread::stop);
+    QObject::connect(&window, &MainWindow::runRequested, [&]() { samplingThread.start(); });
 
     window.show();
 
